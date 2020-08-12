@@ -92,3 +92,22 @@ ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
 
     return ERROR_SUCCESS;
 }
+
+ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
+    if (lhs->height != rhs->height || lhs->width != rhs->width) {
+        return ERROR_DONT_MATCH_MATRIX;
+    }
+    matrix_create(result, rhs->height, rhs->width);
+    for (int i = 0; i < rhs->height; i++) {
+        for (int j = 0; j < rhs->width; i++) {
+
+            double* lvalue;
+            matrix_getValue(lhs, i, j, lvalue);
+            double* rvalue;
+            matrix_getValue(lhs, i, j, rvalue);
+
+            matrix_setValue(*result, i, j, *lvalue + *rvalue);
+        }
+    }
+    return ERROR_SUCCESS;
+}
