@@ -76,3 +76,12 @@ ErrorCode matrix_getWidth(CPMatrix matrix, uint32_t* result) {
 
     return ERROR_SUCCESS;
 }
+
+ErrorCode matrix_setValue(PMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
+                          double value)
+{
+ matrix->numbers[rowIndex][colIndex] = value;
+
+ return ERROR_SUCCESS;
+}
+
