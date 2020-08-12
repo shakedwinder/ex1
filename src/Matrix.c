@@ -111,3 +111,25 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     }
     return ERROR_SUCCESS;
 }
+
+ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
+    if (lhs->width != rhs->height) {
+        return ERROR_DONT_MATCH_MATRIX;
+    }
+    matrix_create(result, lhs->height, rhs->width);
+    for (int i = 0; i < (*result)->height; i++) {
+        for (int j = 0; j < (*result)->width; j++) {
+            double sum = 0.0;
+            for (int n = 0; n < lhs->width; n++) {
+                double* lvalue;
+                double* rvalue;
+                matrix_getValue(lhs, i, n, lvalue);
+                matrix_getValue(rhs, n, j, rvalue);
+
+                sum += (*lvalue)*(*rvalue);
+            }
+            matrix_setValue(*result, i, j, sum);
+        }
+    }
+    return ERROR_SUCCESS;
+}
