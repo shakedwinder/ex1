@@ -47,6 +47,8 @@ ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
         return ERROR_NO_MATRIX;
     }
     (*result)->numbers = source->numbers;
+
+    return ERROR_SUCCESS;
 }
 
 void matrix_destroy(PMatrix matrix) {
@@ -55,4 +57,22 @@ void matrix_destroy(PMatrix matrix) {
     }
     free(matrix->numbers);
     free(matrix);
+}
+
+ErrorCode matrix_getHeight(CPMatrix matrix, uint32_t* result) {
+    if (matrix->height == NULL) {
+        return ERROR_NO_HEIGHT;
+    }
+    *result = matrix->height;
+    
+    return ERROR_SUCCESS;
+}
+
+ErrorCode matrix_getWidth(CPMatrix matrix, uint32_t* result) {
+    if (matrix->width == NULL) {
+        return ERROR_NO_WIDTH;
+    }
+    *result = matrix->width;
+
+    return ERROR_SUCCESS;
 }
