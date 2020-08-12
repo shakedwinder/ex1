@@ -31,3 +31,28 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
 
     return ERROR_SUCCESS;
 }
+
+/**
+ * @brief Creates a new matrix from an old matrix.
+ *
+ * @param[out] matrix The address of a matrix pointer to receive
+ *  the address of the copied matrix.
+ * @param[in] source The matrix to copy.
+ * @return ErrorCode
+ */
+ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
+    if (source->height == NULL) {
+        return ERROR_NO_HEIGHT;
+    }
+    (*result)->height = source->height;
+
+    if (source->width == NULL) {
+        return ERROR_NO_WIDTH;
+    }
+    (*result)->width = source->width;
+
+    if (source->numbers == NULL) {
+        return ERROR_NO_MATRIX;
+    }
+    (*result)->numbers = source->numbers;
+}
