@@ -48,3 +48,11 @@ ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
     }
     (*result)->numbers = source->numbers;
 }
+
+void matrix_destroy(PMatrix matrix) {
+    for (int i = 0; i < matrix->height; i++) {
+        free(matrix->numbers[i]);
+    }
+    free(matrix->numbers);
+    free(matrix);
+}
