@@ -85,3 +85,10 @@ ErrorCode matrix_setValue(PMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
  return ERROR_SUCCESS;
 }
 
+ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
+                          double* value) 
+{
+    *value = matrix->numbers[rowIndex][colIndex];
+
+    return ERROR_SUCCESS;
+}
