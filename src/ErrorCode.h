@@ -4,6 +4,12 @@
 #include <stdint.h>
 
 typedef enum {
+    ERROR_NO_MATRIX = 1,
+    ERROR_NO_HEIGHT = 1,
+    ERROR_NO_WIDTH = 1,
+    ERROR_NO_VALUE = 1,
+    ERROR_POINTER_NULL = 1,
+    ERROR_FAILD_MEMORY_MALLOC = 1,
     // DON'T CHANGE THIS VALUE!
     ERROR_SUCCESS = 0,
 } ErrorCode;
