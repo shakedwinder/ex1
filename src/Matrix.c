@@ -133,3 +133,15 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     }
     return ERROR_SUCCESS;
 }
+
+ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
+    for (int i = 0; i < matrix->height; i++) {
+        for (int j = 0; j < matrix->width; j++) {
+            double* value;
+            matrix_getValue(matrix, i, j, value);
+            double newval = (*value)*scalar;
+            matrix_setValue(matrix, i, j, newval);
+        }
+    }
+    return ERROR_SUCCESS;
+}
