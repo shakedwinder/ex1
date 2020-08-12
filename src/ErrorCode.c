@@ -29,6 +29,9 @@ const char* error_getErrorMessage(ErrorCode code) {
     if (code == ERROR_FAILD_MEMORY_MALLOC) {
         return "error: could not allocate memory";
     }
+    if (code == ERROR_DONT_MATCH_MATRIX) {
+        return "error: the matrixes dosent match for this action";
+    }
     return "";
 }
 
