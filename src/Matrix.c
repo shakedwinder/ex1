@@ -33,14 +33,8 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
 }
 
 ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
-    if (source->height == NULL) {
-        return ERROR_NO_HEIGHT;
-    }
     (*result)->height = source->height;
 
-    if (source->width == NULL) {
-        return ERROR_NO_WIDTH;
-    }
     (*result)->width = source->width;
 
     if (source->numbers == NULL) {
@@ -60,18 +54,12 @@ void matrix_destroy(PMatrix matrix) {
 }
 
 ErrorCode matrix_getHeight(CPMatrix matrix, uint32_t* result) {
-    if (matrix->height == NULL) {
-        return ERROR_NO_HEIGHT;
-    }
     *result = matrix->height;
     
     return ERROR_SUCCESS;
 }
 
 ErrorCode matrix_getWidth(CPMatrix matrix, uint32_t* result) {
-    if (matrix->width == NULL) {
-        return ERROR_NO_WIDTH;
-    }
     *result = matrix->width;
 
     return ERROR_SUCCESS;
