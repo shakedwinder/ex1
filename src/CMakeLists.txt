@@ -3,6 +3,8 @@ project(ex1 VERSION 0.1.0)
 
 include(CTest)
 enable_testing()
+set(C_STANDARD C99)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 add_executable(ex1 main.c)
 
