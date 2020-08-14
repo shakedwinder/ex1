@@ -88,15 +88,17 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     matrix_create(result, rhs->height, rhs->width);
     for (int i = 0; i < rhs->height; i++) {
         for (int j = 0; j < rhs->width; i++) {
+            double lvalue = 0.0;
+            double* lval;
+            lval = &lvalue;
+            matrix_getValue(lhs, i, j, lval);
 
-            double* lvalue;
-            *lvalue = 0.0;
-            matrix_getValue(lhs, i, j, lvalue);
-            double* rvalue;
-            *rvalue = 0.0;
-            matrix_getValue(lhs, i, j, rvalue);
+            double rvalue = 0.0;
+            double *rval;
+            rval = &rvalue;
+            matrix_getValue(lhs, i, j, rval);
 
-            matrix_setValue(*result, i, j, *lvalue + *rvalue);
+            matrix_setValue(*result, i, j, *lval + *rval);
         }
     }
     return ERROR_SUCCESS;
@@ -111,14 +113,17 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
         for (int j = 0; j < (*result)->width; j++) {
             double sum = 0.0;
             for (int n = 0; n < lhs->width; n++) {
-                double* lvalue;
-                *lvalue = 0.0;
-                double* rvalue;
-                *rvalue = 0.0;
-                matrix_getValue(lhs, i, n, lvalue);
-                matrix_getValue(rhs, n, j, rvalue);
+                double lvalue = 0.0; 
+                double* lval;
+                lval = &lvalue;
 
-                sum += (*lvalue)*(*rvalue);
+                double rvalue = 0.0;
+                double* rval;
+                rval = &rvalue;
+                matrix_getValue(lhs, i, n, lval);
+                matrix_getValue(rhs, n, j, rval);
+
+                sum += (*lval)*(*rval);
             }
             matrix_setValue(*result, i, j, sum);
         }
@@ -129,10 +134,11 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
 ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
     for (int i = 0; i < matrix->height; i++) {
         for (int j = 0; j < matrix->width; j++) {
-            double* value;
-            *value = 0.0;
-            matrix_getValue(matrix, i, j, value);
-            double newval = (*value)*scalar;
+            double value = 0.0;
+            double* val;
+            val = &value;
+            matrix_getValue(matrix, i, j, val);
+            double newval = value * scalar;
             matrix_setValue(matrix, i, j, newval);
         }
     }
