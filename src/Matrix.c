@@ -22,7 +22,7 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
         return ERROR_FAILD_MEMORY_MALLOC;
     }
 
-    for (int i = 0; i < height; i++) {
+    for (int i = 0; i < (*matrix)->height; i++) {
         (*matrix)->numbers[i] = (double*)malloc(width * sizeof(double));
         if ((*matrix)->numbers[i] == NULL) {
             return ERROR_FAILD_MEMORY_MALLOC;
@@ -90,8 +90,10 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
         for (int j = 0; j < rhs->width; i++) {
 
             double* lvalue;
+            *lvalue = 0.0;
             matrix_getValue(lhs, i, j, lvalue);
             double* rvalue;
+            *rvalue = 0.0;
             matrix_getValue(lhs, i, j, rvalue);
 
             matrix_setValue(*result, i, j, *lvalue + *rvalue);
@@ -110,7 +112,9 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
             double sum = 0.0;
             for (int n = 0; n < lhs->width; n++) {
                 double* lvalue;
+                *lvalue = 0.0;
                 double* rvalue;
+                *rvalue = 0.0;
                 matrix_getValue(lhs, i, n, lvalue);
                 matrix_getValue(rhs, n, j, rvalue);
 
@@ -126,6 +130,7 @@ ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
     for (int i = 0; i < matrix->height; i++) {
         for (int j = 0; j < matrix->width; j++) {
             double* value;
+            *value = 0.0;
             matrix_getValue(matrix, i, j, value);
             double newval = (*value)*scalar;
             matrix_setValue(matrix, i, j, newval);
