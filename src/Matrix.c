@@ -39,14 +39,14 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
 }
 
 ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
-    (*result)->height = source->height;
-
-    (*result)->width = source->width;
-
-    if (source->numbers == NULL) {
-        return ERROR_NO_MATRIX;
+    PMatrix* end;
+    matrix_create(end, source->height, source->width);
+    for (int i = 0; i < source->height; i++) {
+        for (int j =0; j < source->width; j++) {
+            (*end)->numbers[i][j] = source->numbers[i][j];
+        }
     }
-    (*result)->numbers = source->numbers;
+    result = end;
 
     return ERROR_SUCCESS;
 }
