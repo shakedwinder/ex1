@@ -41,6 +41,7 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
 ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
     PMatrix* end;
     ErrorCode ec = ERROR_SUCCESS;
+    //create new matrix with the source values
     ec = matrix_create(end, source->height, source->width);
     if (ec != ERROR_SUCCESS) {
         return ec;
@@ -122,11 +123,14 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     if (lhs->height != rhs->height || lhs->width != rhs->width) {
         return ERROR_DONT_MATCH_MATRIX;
     }
+    //ec is for checking every call to function bring us an error 
     ErrorCode ec = ERROR_SUCCESS;
+    //create new matrix to put the final matrix in
     ec = matrix_create(result, rhs->height, rhs->width);
     if (ec != ERROR_SUCCESS) {
         return ec;
     }
+    //move on every place and bring the sum to the new matrix
     for (int i = 0; i < rhs->height; i++) {
         for (int j = 0; j < rhs->width; i++) {
 
@@ -165,11 +169,13 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     if (lhs->width != rhs->height) {
         return ERROR_DONT_MATCH_MATRIX;
     }
+    //ec is for checking every call to function bring us an error 
     ErrorCode ec = ERROR_SUCCESS;
     ec = matrix_create(result, lhs->height, rhs->width);
     if (ec != ERROR_SUCCESS) {
         return ec;
     }
+    //multiply matrices by the rules
     for (int i = 0; i < (*result)->height; i++) {
         for (int j = 0; j < (*result)->width; j++) {
             double sum = 0.0;
@@ -204,7 +210,9 @@ ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
     if (matrix == NULL) {
         return ERROR_POINTER_NULL;
     }
+    //ec is for checking every call to function bring us an error 
     ErrorCode ec = ERROR_SUCCESS;
+    //multiply every value in the matrix with the scalar
     for (int i = 0; i < matrix->height; i++) {
         for (int j = 0; j < matrix->width; j++) {
             double val = 0.0;
