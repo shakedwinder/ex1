@@ -130,14 +130,17 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     for (int i = 0; i < rhs->height; i++) {
         for (int j = 0; j < rhs->width; i++) {
 
+            double lval = 0.0;
             double* lvalue;
-            *lvalue = 0.0;
+            lvalue = &lval;
             ec = matrix_getValue(lhs, i, j, lvalue);
             if (ec != ERROR_SUCCESS) {
                 return ec;
             }
+
+            double rval = 0.0;
             double* rvalue;
-            *rvalue = 0.0;
+            rvalue = &rval;
             ec = matrix_getValue(lhs, i, j, rvalue);
             if (ec != ERROR_SUCCESS) {
                 return ec;
@@ -171,10 +174,13 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
         for (int j = 0; j < (*result)->width; j++) {
             double sum = 0.0;
             for (int n = 0; n < lhs->width; n++) {
+                double lval = 0.0;
                 double* lvalue;
-                *lvalue = 0.0;
+                lvalue = &lval;
+
+                double rval;
                 double* rvalue;
-                *rvalue = 0.0;
+                rvalue = &rval;
                 ec = matrix_getValue(lhs, i, n, lvalue);
                 if (ec != ERROR_SUCCESS) {
                     return ec;
@@ -201,14 +207,14 @@ ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
     ErrorCode ec = ERROR_SUCCESS;
     for (int i = 0; i < matrix->height; i++) {
         for (int j = 0; j < matrix->width; j++) {
-
+            double val = 0.0;
             double* value;
-            *value = 0.0;
+            value = &val;
             ec = matrix_getValue(matrix, i, j, value);
             if (ec != ERROR_SUCCESS) {
                 return ec;
             }
-            
+
             double newval = (*value)*scalar;
             ec = matrix_setValue(matrix, i, j, newval);
             if (ec != ERROR_SUCCESS) {
