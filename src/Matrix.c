@@ -94,6 +94,9 @@ ErrorCode matrix_setValue(PMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
     if (matrix == NULL) {
         return ERROR_POINTER_NULL;
     }
+    if (rowIndex >= matrix->height || colIndex >= matrix->width) {
+        return ERROR_POINTER_NULL;
+    }
     matrix->numbers[rowIndex][colIndex] = value;
     
     return ERROR_SUCCESS;
@@ -106,6 +109,9 @@ ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
         return ERROR_POINTER_NULL;
     }
     if (matrix == NULL) {
+        return ERROR_POINTER_NULL;
+    }
+    if (rowIndex >= matrix->height || colIndex >= matrix->width) {
         return ERROR_POINTER_NULL;
     }
     *value = matrix->numbers[rowIndex][colIndex];
