@@ -40,7 +40,11 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
 
 ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
     PMatrix* end;
-    matrix_create(end, source->height, source->width);
+    ErrorCode ec = ERROR_SUCCESS;
+    ec = matrix_create(end, source->height, source->width);
+    if (ec != ERROR_SUCCESS) {
+        return ec;
+    }
     for (int i = 0; i < source->height; i++) {
         for (int j =0; j < source->width; j++) {
             (*end)->numbers[i][j] = source->numbers[i][j];
@@ -118,18 +122,31 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     if (lhs->height != rhs->height || lhs->width != rhs->width) {
         return ERROR_DONT_MATCH_MATRIX;
     }
-    matrix_create(result, rhs->height, rhs->width);
+    ErrorCode ec = ERROR_SUCCESS;
+    ec = matrix_create(result, rhs->height, rhs->width);
+    if (ec != ERROR_SUCCESS) {
+        return ec;
+    }
     for (int i = 0; i < rhs->height; i++) {
         for (int j = 0; j < rhs->width; i++) {
 
             double* lvalue;
             *lvalue = 0.0;
-            matrix_getValue(lhs, i, j, lvalue);
+            ec = matrix_getValue(lhs, i, j, lvalue);
+            if (ec != ERROR_SUCCESS) {
+                return ec;
+            }
             double* rvalue;
             *rvalue = 0.0;
-            matrix_getValue(lhs, i, j, rvalue);
+            ec = matrix_getValue(lhs, i, j, rvalue);
+            if (ec != ERROR_SUCCESS) {
+                return ec;
+            }
 
-            matrix_setValue(*result, i, j, *lvalue + *rvalue);
+            ec = matrix_setValue(*result, i, j, *lvalue + *rvalue);
+            if (ec != ERROR_SUCCESS) {
+                return ec;
+            }
         }
     }
     return ERROR_SUCCESS;
@@ -145,7 +162,11 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     if (lhs->width != rhs->height) {
         return ERROR_DONT_MATCH_MATRIX;
     }
-    matrix_create(result, lhs->height, rhs->width);
+    ErrorCode ec = ERROR_SUCCESS;
+    ec = matrix_create(result, lhs->height, rhs->width);
+    if (ec != ERROR_SUCCESS) {
+        return ec;
+    }
     for (int i = 0; i < (*result)->height; i++) {
         for (int j = 0; j < (*result)->width; j++) {
             double sum = 0.0;
@@ -154,12 +175,20 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
                 *lvalue = 0.0;
                 double* rvalue;
                 *rvalue = 0.0;
-                matrix_getValue(lhs, i, n, lvalue);
-                matrix_getValue(rhs, n, j, rvalue);
-
+                ec = matrix_getValue(lhs, i, n, lvalue);
+                if (ec != ERROR_SUCCESS) {
+                    return ec;
+                }
+                ec = matrix_getValue(rhs, n, j, rvalue);
+                if (ec != ERROR_SUCCESS) {
+                    return ec;
+                }
                 sum += (*lvalue)*(*rvalue);
             }
-            matrix_setValue(*result, i, j, sum);
+            ec = matrix_setValue(*result, i, j, sum);
+            if (ec != ERROR_SUCCESS) {
+                return ec;
+            }
         }
     }
     return ERROR_SUCCESS;
@@ -169,13 +198,22 @@ ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
     if (matrix == NULL) {
         return ERROR_POINTER_NULL;
     }
+    ErrorCode ec = ERROR_SUCCESS;
     for (int i = 0; i < matrix->height; i++) {
         for (int j = 0; j < matrix->width; j++) {
+
             double* value;
             *value = 0.0;
-            matrix_getValue(matrix, i, j, value);
+            ec = matrix_getValue(matrix, i, j, value);
+            if (ec != ERROR_SUCCESS) {
+                return ec;
+            }
+            
             double newval = (*value)*scalar;
-            matrix_setValue(matrix, i, j, newval);
+            ec = matrix_setValue(matrix, i, j, newval);
+            if (ec != ERROR_SUCCESS) {
+                return ec;
+            }
         }
     }
     return ERROR_SUCCESS;
