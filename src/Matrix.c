@@ -60,12 +60,24 @@ void matrix_destroy(PMatrix matrix) {
 }
 
 ErrorCode matrix_getHeight(CPMatrix matrix, uint32_t* result) {
+    if (result == NULL) {
+        return ERROR_NO_VALUE;
+    }
+    if (matrix == NULL) {
+        return ERROR_POINTER_NULL;
+    }
     *result = matrix->height;
     
     return ERROR_SUCCESS;
 }
 
 ErrorCode matrix_getWidth(CPMatrix matrix, uint32_t* result) {
+    if (result == NULL) {
+        return ERROR_POINTER_NULL;
+    }
+    if (matrix == NULL) {
+        return ERROR_POINTER_NULL;
+    }
     *result = matrix->width;
 
     return ERROR_SUCCESS;
@@ -74,20 +86,35 @@ ErrorCode matrix_getWidth(CPMatrix matrix, uint32_t* result) {
 ErrorCode matrix_setValue(PMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
                           double value)
 {
- matrix->numbers[rowIndex][colIndex] = value;
-
- return ERROR_SUCCESS;
+    if (matrix == NULL) {
+        return ERROR_POINTER_NULL;
+    }
+    matrix->numbers[rowIndex][colIndex] = value;
+    
+    return ERROR_SUCCESS;
 }
 
 ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
                           double* value) 
 {
+    if (value == NULL) {
+        return ERROR_POINTER_NULL;
+    }
+    if (matrix == NULL) {
+        return ERROR_POINTER_NULL;
+    }
     *value = matrix->numbers[rowIndex][colIndex];
 
     return ERROR_SUCCESS;
 }
 
 ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
+    if (lhs == NULL) {
+        return ERROR_POINTER_NULL;
+    }
+    if (rhs == NULL) {
+        return ERROR_POINTER_NULL;
+    }
     if (lhs->height != rhs->height || lhs->width != rhs->width) {
         return ERROR_DONT_MATCH_MATRIX;
     }
@@ -109,6 +136,12 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
 }
 
 ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
+    if (lhs == NULL) {
+        return ERROR_POINTER_NULL;
+    }
+    if (rhs == NULL) {
+        return ERROR_POINTER_NULL;
+    }
     if (lhs->width != rhs->height) {
         return ERROR_DONT_MATCH_MATRIX;
     }
@@ -133,6 +166,9 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
 }
 
 ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
+    if (matrix == NULL) {
+        return ERROR_POINTER_NULL;
+    }
     for (int i = 0; i < matrix->height; i++) {
         for (int j = 0; j < matrix->width; j++) {
             double* value;
