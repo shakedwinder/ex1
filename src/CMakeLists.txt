@@ -3,10 +3,10 @@ project(ex1 VERSION 0.1.0)
 
 include(CTest)
 enable_testing()
-set(C_STANDARD C99)
-add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-add_executable(ex1 main.c)
+set(C_STANDARD C99)
+add_library(ex1 SHARED ErrorCode.c Matrix.c)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
