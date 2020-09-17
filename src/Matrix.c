@@ -194,24 +194,9 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     for (int i = 0; i < (*result)->height; i++) {
         for (int j = 0; j < (*result)->width; j++) {
             double sum = 0.0;
-            for (int n = 0; n < lhs->width; n++) {
-                double lval = 0.0;
-                double* lvalue;
-                lvalue = &lval;
-
-                double rval;
-                double* rvalue;
-                rvalue = &rval;
-                ec = matrix_getValue(lhs, i, n, lvalue);
-                if (ec != ERROR_SUCCESS) {
-                    return ec;
-                }
-                ec = matrix_getValue(rhs, n, j, rvalue);
-                if (ec != ERROR_SUCCESS) {
-                    return ec;
-                }
-                sum += (*lvalue)*(*rvalue);
-            }
+            double * sump = &sum;
+            ec = matrix_multiplyVectors(lhs, rhs, i, j, sump);
+            
             ec = matrix_setValue(*result, i, j, sum);
             if (ec != ERROR_SUCCESS) {
                 return ec;
@@ -246,4 +231,29 @@ ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
         }
     }
     return ERROR_SUCCESS;
+}
+
+ErrorCode matrix_multiplyVectors(CPMatrix lhs, CPMatrix rhs, uint32_t rowIndex, uint32_t colIndex,
+                          double* sum)
+ {
+     ErrorCode ec = ERROR_SUCCESS;
+    for (int n = 0; n < lhs->width; n++) {
+                double lval = 0.0;
+                double* lvalue;
+                lvalue = &lval;
+
+                double rval;
+                double* rvalue;
+                rvalue = &rval;
+                ec = matrix_getValue(lhs, rowIndex, n, lvalue);
+                if (ec != ERROR_SUCCESS) {
+                    return ec;
+                }
+                ec = matrix_getValue(rhs, n, colIndex, rvalue);
+                if (ec != ERROR_SUCCESS) {
+                    return ec;
+                }
+                *sum += (*lvalue)*(*rvalue);
+            }
+            return ec;
 }

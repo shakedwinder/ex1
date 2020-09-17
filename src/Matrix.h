@@ -112,3 +112,17 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs);
  * @return ErrorCode
  */
 ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar);
+
+/**
+ * @brief do a multiply between vectors
+ * 
+ * @param lhs the left matrix
+ * @param rhs the right matrix
+ * @param rowIndex the row index for lhs
+ * @param colIndex the colomn index for rhs
+ * @param sum the sum of the multiply
+ * @return ErrorCode 
+ */
+ErrorCode matrix_multiplyVectors(CPMatrix lhs, CPMatrix rhs, uint32_t rowIndex, uint32_t colIndex,
+                          double* sum);
+
