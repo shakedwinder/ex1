@@ -5,40 +5,48 @@
 typedef struct Matrix
 {
     double** numbers;
-    int height;
-    int width;
+    unsigned int height;
+    unsigned int width;
 }Matrix;
 
-ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
-    *matrix = (PMatrix) malloc(sizeof(PMatrix));
-    if (*matrix == NULL) {
+ErrorCode matrix_create(PMatrix* matrix, const uint32_t height, const uint32_t width) {
+    PMatrix* matrix1;
+    *matrix1 = (PMatrix) malloc(sizeof(PMatrix));
+    if (*matrix1 == NULL) {
         return ERROR_FAILD_MEMORY_MALLOC;
     }
 
-    (*matrix)->height = height;
-    (*matrix)->width = width;
-    (*matrix)->numbers = (double**)malloc(height * sizeof(double*));
-    if ((*matrix)->numbers == NULL) {
+    (*matrix1)->height = height;
+    (*matrix1)->width = width;
+    (*matrix1)->numbers = (double**)calloc(height, sizeof(double*));
+    if ((*matrix1)->numbers == NULL) {
+        free(*matrix1);
         return ERROR_FAILD_MEMORY_MALLOC;
     }
 
-    for (int i = 0; i < (*matrix)->height; i++) {
-        (*matrix)->numbers[i] = (double*)malloc(width * sizeof(double));
-        if ((*matrix)->numbers[i] == NULL) {
+    for (int i = 0; i < (*matrix1)->height; i++) {
+        (*matrix1)->numbers[i] = (double*)calloc(width, sizeof(double));
+        if ((*matrix1)->numbers[i] == NULL) {
+            for (int j = 0; j < i; j++) {
+                free((*matrix1)->numbers[j]);
+            }
+            free((*matrix1)->numbers);
+            free(*matrix1);
             return ERROR_FAILD_MEMORY_MALLOC;
         }
     }
 
-    for (int i = 0; i < (*matrix)->height; i++) {
-        for (int j = 0; j < (*matrix)->width; j++) {
-            (*matrix)->numbers[i][j] = 0;
+    for (int i = 0; i < (*matrix1)->height; i++) {
+        for (int j = 0; j < (*matrix1)->width; j++) {
+            (*matrix1)->numbers[i][j] = 0;
         }
     }
+    matrix = matrix1;
 
     return ERROR_SUCCESS;
 }
 
-ErrorCode matrix_copy(PMatrix* result, CPMatrix source) {
+ErrorCode matrix_copy(PMatrix* result, const CPMatrix source) {
     PMatrix* end;
     ErrorCode ec = ERROR_SUCCESS;
     //create new matrix with the source values
@@ -64,7 +72,7 @@ void matrix_destroy(PMatrix matrix) {
     free(matrix);
 }
 
-ErrorCode matrix_getHeight(CPMatrix matrix, uint32_t* result) {
+ErrorCode matrix_getHeight(const CPMatrix matrix, uint32_t* result) {
     if (result == NULL) {
         return ERROR_NO_VALUE;
     }
@@ -76,7 +84,7 @@ ErrorCode matrix_getHeight(CPMatrix matrix, uint32_t* result) {
     return ERROR_SUCCESS;
 }
 
-ErrorCode matrix_getWidth(CPMatrix matrix, uint32_t* result) {
+ErrorCode matrix_getWidth(const CPMatrix matrix, uint32_t* result) {
     if (result == NULL) {
         return ERROR_POINTER_NULL;
     }
@@ -102,19 +110,16 @@ ErrorCode matrix_setValue(PMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
     return ERROR_SUCCESS;
 }
 
-ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
+ErrorCode matrix_getValue(const CPMatrix matrix, const uint32_t rowIndex, const uint32_t colIndex,
                           double* value) 
 {
     if (value == NULL) {
-        printf("get 1\n");
         return ERROR_POINTER_NULL;
     }
     if (matrix == NULL) {
-        printf("get 2\n");
         return ERROR_POINTER_NULL;
     }
     if (rowIndex >= matrix->height || colIndex >= matrix->width) {
-        printf("get 3 %d %d \n",rowIndex,colIndex);
         return ERROR_POINTER_NULL;
     }
     *value = matrix->numbers[rowIndex][colIndex];
@@ -122,7 +127,7 @@ ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
     return ERROR_SUCCESS;
 }
 
-ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
+ErrorCode matrix_add(PMatrix* result, const CPMatrix lhs, const CPMatrix rhs) {
     if (lhs == NULL) {
         return ERROR_POINTER_NULL;
     }
@@ -137,7 +142,6 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     //create new matrix to put the final matrix in
     ec = matrix_create(result, rhs->height, rhs->width);
     if (ec != ERROR_SUCCESS) {
-        printf("faild 1\n");
         return ec;
     }
     //move on every place and bring the sum to the new matrix
@@ -149,7 +153,6 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
             lvalue = &lval;
             ec = matrix_getValue(lhs, i, j, lvalue);
             if (ec != ERROR_SUCCESS) {
-                printf("faild 2\n");
                 return ec;
             }
 
@@ -158,13 +161,12 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
             rvalue = &rval;
             ec = matrix_getValue(rhs, i, j, rvalue);
             if (ec != ERROR_SUCCESS) {
-                printf("faild 3\n");
                 return ec;
             }
 
+            //set the final after + in the place
             ec = matrix_setValue(*result, i, j, *lvalue + *rvalue);
             if (ec != ERROR_SUCCESS) {
-                printf("faild 4\n");
                 return ec;
             }
         }
@@ -172,7 +174,7 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     return ERROR_SUCCESS;
 }
 
-ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
+ErrorCode matrix_multiplyMatrices(PMatrix* result, const CPMatrix lhs, const CPMatrix rhs) {
     if (lhs == NULL) {
         return ERROR_POINTER_NULL;
     }
@@ -192,24 +194,9 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     for (int i = 0; i < (*result)->height; i++) {
         for (int j = 0; j < (*result)->width; j++) {
             double sum = 0.0;
-            for (int n = 0; n < lhs->width; n++) {
-                double lval = 0.0;
-                double* lvalue;
-                lvalue = &lval;
-
-                double rval;
-                double* rvalue;
-                rvalue = &rval;
-                ec = matrix_getValue(lhs, i, n, lvalue);
-                if (ec != ERROR_SUCCESS) {
-                    return ec;
-                }
-                ec = matrix_getValue(rhs, n, j, rvalue);
-                if (ec != ERROR_SUCCESS) {
-                    return ec;
-                }
-                sum += (*lvalue)*(*rvalue);
-            }
+            double * sump = &sum;
+            ec = matrix_multiplyVectors(lhs, rhs, i, j, sump);
+            
             ec = matrix_setValue(*result, i, j, sum);
             if (ec != ERROR_SUCCESS) {
                 return ec;
@@ -219,7 +206,7 @@ ErrorCode matrix_multiplyMatrices(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     return ERROR_SUCCESS;
 }
 
-ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
+ErrorCode matrix_multiplyWithScalar(PMatrix matrix, const double scalar) {
     if (matrix == NULL) {
         return ERROR_POINTER_NULL;
     }
@@ -244,4 +231,29 @@ ErrorCode matrix_multiplyWithScalar(PMatrix matrix, double scalar) {
         }
     }
     return ERROR_SUCCESS;
+}
+
+ErrorCode matrix_multiplyVectors(const CPMatrix lhs, const CPMatrix rhs, const uint32_t rowIndex,
+const uint32_t colIndex,double* sum)
+ {
+     ErrorCode ec = ERROR_SUCCESS;
+    for (int n = 0; n < lhs->width; n++) {
+                double lval = 0.0;
+                double* lvalue;
+                lvalue = &lval;
+
+                double rval;
+                double* rvalue;
+                rvalue = &rval;
+                ec = matrix_getValue(lhs, rowIndex, n, lvalue);
+                if (ec != ERROR_SUCCESS) {
+                    return ec;
+                }
+                ec = matrix_getValue(rhs, n, colIndex, rvalue);
+                if (ec != ERROR_SUCCESS) {
+                    return ec;
+                }
+                *sum += (*lvalue)*(*rvalue);
+            }
+            return ec;
 }
