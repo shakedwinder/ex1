@@ -5,8 +5,8 @@
 typedef struct Matrix
 {
     double** numbers;
-    int height;
-    int width;
+    unsigned int height;
+    unsigned int width;
 }Matrix;
 
 ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
@@ -17,14 +17,20 @@ ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
 
     (*matrix)->height = height;
     (*matrix)->width = width;
-    (*matrix)->numbers = (double**)malloc(height * sizeof(double*));
+    (*matrix)->numbers = (double**)calloc(height, sizeof(double*));
     if ((*matrix)->numbers == NULL) {
+        free(*matrix);
         return ERROR_FAILD_MEMORY_MALLOC;
     }
 
     for (int i = 0; i < (*matrix)->height; i++) {
-        (*matrix)->numbers[i] = (double*)malloc(width * sizeof(double));
+        (*matrix)->numbers[i] = (double*)calloc(width, sizeof(double));
         if ((*matrix)->numbers[i] == NULL) {
+            for (int j = 0; j < i; j++) {
+                free((*matrix)->numbers[j]);
+            }
+            free((*matrix)->numbers);
+            free(*matrix);
             return ERROR_FAILD_MEMORY_MALLOC;
         }
     }
@@ -106,15 +112,12 @@ ErrorCode matrix_getValue(CPMatrix matrix, uint32_t rowIndex, uint32_t colIndex,
                           double* value) 
 {
     if (value == NULL) {
-        printf("get 1\n");
         return ERROR_POINTER_NULL;
     }
     if (matrix == NULL) {
-        printf("get 2\n");
         return ERROR_POINTER_NULL;
     }
     if (rowIndex >= matrix->height || colIndex >= matrix->width) {
-        printf("get 3 %d %d \n",rowIndex,colIndex);
         return ERROR_POINTER_NULL;
     }
     *value = matrix->numbers[rowIndex][colIndex];
@@ -137,7 +140,6 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
     //create new matrix to put the final matrix in
     ec = matrix_create(result, rhs->height, rhs->width);
     if (ec != ERROR_SUCCESS) {
-        printf("faild 1\n");
         return ec;
     }
     //move on every place and bring the sum to the new matrix
@@ -149,7 +151,6 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
             lvalue = &lval;
             ec = matrix_getValue(lhs, i, j, lvalue);
             if (ec != ERROR_SUCCESS) {
-                printf("faild 2\n");
                 return ec;
             }
 
@@ -158,13 +159,11 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
             rvalue = &rval;
             ec = matrix_getValue(rhs, i, j, rvalue);
             if (ec != ERROR_SUCCESS) {
-                printf("faild 3\n");
                 return ec;
             }
 
             ec = matrix_setValue(*result, i, j, *lvalue + *rvalue);
             if (ec != ERROR_SUCCESS) {
-                printf("faild 4\n");
                 return ec;
             }
         }
