@@ -10,36 +10,38 @@ typedef struct Matrix
 }Matrix;
 
 ErrorCode matrix_create(PMatrix* matrix, uint32_t height, uint32_t width) {
-    *matrix = (PMatrix) malloc(sizeof(PMatrix));
-    if (*matrix == NULL) {
+    PMatrix* matrix1;
+    *matrix1 = (PMatrix) malloc(sizeof(PMatrix));
+    if (*matrix1 == NULL) {
         return ERROR_FAILD_MEMORY_MALLOC;
     }
 
-    (*matrix)->height = height;
-    (*matrix)->width = width;
-    (*matrix)->numbers = (double**)calloc(height, sizeof(double*));
-    if ((*matrix)->numbers == NULL) {
-        free(*matrix);
+    (*matrix1)->height = height;
+    (*matrix1)->width = width;
+    (*matrix1)->numbers = (double**)calloc(height, sizeof(double*));
+    if ((*matrix1)->numbers == NULL) {
+        free(*matrix1);
         return ERROR_FAILD_MEMORY_MALLOC;
     }
 
-    for (int i = 0; i < (*matrix)->height; i++) {
-        (*matrix)->numbers[i] = (double*)calloc(width, sizeof(double));
-        if ((*matrix)->numbers[i] == NULL) {
+    for (int i = 0; i < (*matrix1)->height; i++) {
+        (*matrix1)->numbers[i] = (double*)calloc(width, sizeof(double));
+        if ((*matrix1)->numbers[i] == NULL) {
             for (int j = 0; j < i; j++) {
-                free((*matrix)->numbers[j]);
+                free((*matrix1)->numbers[j]);
             }
-            free((*matrix)->numbers);
-            free(*matrix);
+            free((*matrix1)->numbers);
+            free(*matrix1);
             return ERROR_FAILD_MEMORY_MALLOC;
         }
     }
 
-    for (int i = 0; i < (*matrix)->height; i++) {
-        for (int j = 0; j < (*matrix)->width; j++) {
-            (*matrix)->numbers[i][j] = 0;
+    for (int i = 0; i < (*matrix1)->height; i++) {
+        for (int j = 0; j < (*matrix1)->width; j++) {
+            (*matrix1)->numbers[i][j] = 0;
         }
     }
+    matrix = matrix1;
 
     return ERROR_SUCCESS;
 }
@@ -162,6 +164,7 @@ ErrorCode matrix_add(PMatrix* result, CPMatrix lhs, CPMatrix rhs) {
                 return ec;
             }
 
+            //set the final after + in the place
             ec = matrix_setValue(*result, i, j, *lvalue + *rvalue);
             if (ec != ERROR_SUCCESS) {
                 return ec;
